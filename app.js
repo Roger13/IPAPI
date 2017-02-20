@@ -9,6 +9,12 @@ var port = 5000;
 
 app.use(bodyParser.json());
 
+app.all('/', function(req, res, next) {
+	res.header("Access-Control-Allow-Origin", "*");
+  	res.header('Access-Control-Allow-Headers', 'Content-Type');
+	next();
+ });
+
 app.route('/')
 	.post(function(req, res) {
 	var testip = req.body.list,
@@ -19,13 +25,15 @@ app.route('/')
 	//Query the database for each of the IPs
 	for (var x = 0; x < testip.length; x++) {
 		result = ip2loc.IP2Location_get_all(testip[x]);
-	
 		results.push({
-					"ip": result["ip"],
-					"country": result["country_long"],
-					"city": result["city"]
+					//"ip": result["ip"],
+					//"country": result["country_long"],
+					//"city": result["city"],
+					"lat": result["latitude"],
+					"lng": result["longitude"]
 		});
 	}
+	/*
 	//Count the number of IPs in each of the present cities
 	for (var x = 0; x < results.length; x++) {
 		if (countDict[results[x].city] === undefined) {
@@ -34,7 +42,8 @@ app.route('/')
 			countDict[results[x].city]++; 
 		}
 	}
-	res.send(countDict);
+	*/
+	res.send(results);
 });
 
 app.listen(5000, function(err) {
